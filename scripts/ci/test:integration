@@ -1,0 +1,17 @@
+#!/bin/bash
+
+if [[ -z "${SAUCE_USERNAME}" ]] || [[ -z "${SAUCE_ACCESS_KEY}" ]]; then
+    echo
+    echo "SKIPPING SAUCELABS TESTS --- external committer"
+    echo
+    exit 0
+fi
+
+set -e # exit on error
+set -x # echo commands
+
+py.test -m integration              \
+    --driver SauceLabs              \
+    --self-contained-html           \
+    --html=tests/pytest-report.html \
+    --upload -n4 -r3

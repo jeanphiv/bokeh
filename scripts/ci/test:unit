@@ -1,0 +1,14 @@
+#!/bin/bash
+
+set -e # exit on error
+set -x # echo commands
+
+# install NPM dependencies
+pushd bokehjs
+npm install
+popd
+
+py.test -m 'unit'                  \
+    --rerun=5                      \
+    --cov=bokeh                    \
+    --cov-config=bokeh/.coveragerc

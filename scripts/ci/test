@@ -1,0 +1,24 @@
+#!/bin/bash
+
+if [[ ! -z "${TRAVIS_TAG}" ]]; then
+    echo
+    echo "SKIPPING TEST JOBS --- This is a build for release tag ${TRAVIS_TAG}"
+    echo
+    exit 0
+fi
+
+set -e # exit on error
+set -x # echo commands
+
+# download the pre-built Bokeh package from the build phase
+pushd ${HOME}
+wget -nv "https://s3.amazonaws.com/bokeh-travis/${TRAVIS_BUILD_ID}/conda-bld-noarch.tgz"
+tar xzf conda-bld-noarch.tgz
+popd
+
+# install the pre-built Bokeh package plus all test and runtime dependencies
+conda install --yes --use-local bokeh `python scripts/deps.py run test`
+
+bokeh info
+
+bash "scripts/ci/test:${GROUP}"
